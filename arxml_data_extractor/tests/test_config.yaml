@@ -1,0 +1,7 @@
+RootObject:
+  _xpath: ".//*"
+  SingleValue: "text:Value"
+  ObjectValue:
+    _xpath: ".//Object"
+    Name: "text:Name"
+    Data: "text>int:Data"

@@ -10,7 +10,7 @@ class DataObject():
 
     def __init__(self, name: str, path: Union[DataQuery.XPath, DataQuery.Reference],
                  values: List[Union[DataValue, DataObject]]):
-                 
+
         self.name = name
         self.path = self.__set_path(path)
         self.values = self.__set_values(values)
