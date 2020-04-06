@@ -1,3 +1,5 @@
+import re
+
 from lxml import etree
 from typing import Union
 
@@ -150,3 +152,11 @@ class AsrParser():
             str -- shortname if found otherwise None
         """
         return cls.__first(cls.find(element, 'ar:SHORT-NAME/text()'))
+
+    @staticmethod
+    def assemble_xpath(path: str) -> str:
+        xpath = re.sub(r"([\/]+)(?!$)", r'\1ar:', path)
+        if xpath.startswith('/') or xpath.startswith('.'):
+            return xpath
+        else:
+            return 'ar:' + xpath

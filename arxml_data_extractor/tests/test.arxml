@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<AUTOSAR xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_4-2-1.xsd" xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<AR-PACKAGES>
+		<AR-PACKAGE>
+            <SHORT-NAME>Cluster</SHORT-NAME>
+			<ELEMENTS>
+				<CAN-CLUSTER>
+					<SHORT-NAME>CAN</SHORT-NAME>
+					<LONG-NAME><L-4 L="FOR-ALL">CAN Channel 1</L-4></LONG-NAME>
+                    <CAN-CLUSTER-VARIANTS>
+						<CAN-CLUSTER-CONDITIONAL>
+							<BAUDRATE>500000</BAUDRATE>
+							<PROTOCOL-NAME>CAN</PROTOCOL-NAME>
+						</CAN-CLUSTER-CONDITIONAL>
+					</CAN-CLUSTER-VARIANTS>
+                </CAN-CLUSTER>
+            </ELEMENTS>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>
