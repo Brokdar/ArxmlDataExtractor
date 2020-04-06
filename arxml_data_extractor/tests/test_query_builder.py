@@ -24,7 +24,7 @@ def test_build_simple_data_object_with_xpath():
     assert isinstance(data_value.query, DataQuery)
     assert isinstance(data_value.query.path, DataQuery.XPath)
     assert data_value.query.path.xpath == '/SHORT-NAME'
-    assert data_value.query.path.is_relative == True
+    assert data_value.query.path.is_relative is True
     assert data_value.query.value == 'text'
     assert data_value.query.format == DataQuery.Format.String
 
@@ -47,7 +47,7 @@ def test_build_simple_data_object_with_reference():
     assert isinstance(data_value.query, DataQuery)
     assert isinstance(data_value.query.path, DataQuery.XPath)
     assert data_value.query.path.xpath == '/SHORT-NAME'
-    assert data_value.query.path.is_relative == True
+    assert data_value.query.path.is_relative is True
     assert data_value.query.value == 'text'
     assert data_value.query.format == DataQuery.Format.String
 
