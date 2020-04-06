@@ -1,0 +1,17 @@
+{
+    "python.pythonPath": ".venv\\Scripts\\python.exe",
+    "python.venvPath": ".venv",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.testing.pytestArgs": [
+        "arxml_data_extractor"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfArgs": [
+        "--style",
+        "{based_on_style: chromium, indent_width: 4, column_limit: 100}"
+    ]
+}
