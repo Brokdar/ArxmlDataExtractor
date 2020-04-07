@@ -28,6 +28,9 @@ class QueryHandler():
         return results
 
     def __parse_data_object(self, data_object: DataObject, node: Element = None) -> dict:
+        if node is None:
+            node = self.asr_parser.root
+
         if isinstance(data_object.path, DataQuery.Reference):
             element = self.asr_parser.find_reference(data_object.path.ref)
             if element is None:
@@ -35,14 +38,21 @@ class QueryHandler():
             values = self.__parse_data_values(data_object.values, element)
             return values
         else:
-            return {}
+            xpath = self.asr_parser.assemble_xpath(data_object.path.xpath)
+            elements = self.asr_parser.find(node, xpath)
+            for element in elements:
+                values = self.__parse_data_values(data_object.values, element)
+                return values
 
     def __parse_data_values(self, values: List[Union[DataValue, DataObject]],
                             node: Element) -> dict:
 
         results = {}
         for value in values:
-            results[value.name] = self.__parse_data_value(value.query, node)
+            if isinstance(value, DataObject):
+                results[value.name] = self.__parse_data_object(value, node)
+            else:
+                results[value.name] = self.__parse_data_value(value.query, node)
 
         return results
 

@@ -16,7 +16,7 @@ def only_value():
 
 
 @pytest.fixture
-def can_object():
+def simple_object_by_ref():
     return DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'), [
         DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME'))),
         DataValue(
@@ -26,6 +26,52 @@ def can_object():
                 format=DataQuery.Format.Integer)),
         DataValue('Language', DataQuery(DataQuery.XPath('LONG-NAME/L-4'), value='@L')),
         DataValue('Long Name', DataQuery(DataQuery.XPath('LONG-NAME/L-4')))
+    ])
+
+
+@pytest.fixture
+def complex_object_by_ref():
+    return DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'), [
+        DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME'))),
+        DataValue(
+            'Baudrate',
+            DataQuery(
+                DataQuery.XPath('CAN-CLUSTER-VARIANTS/CAN-CLUSTER-CONDITIONAL/BAUDRATE'),
+                format=DataQuery.Format.Integer)),
+        DataObject('Long Name', DataQuery.XPath('LONG-NAME/L-4'), [
+            DataValue('Language', DataQuery(DataQuery.XPath('.'), value='@L')),
+            DataValue('Name', DataQuery(DataQuery.XPath('.')))
+        ])
+    ])
+
+
+@pytest.fixture
+def simple_object_by_xpath():
+    return DataObject('CAN Cluster', DataQuery.XPath('.//AR-PACKAGE/ELEMENTS/CAN-CLUSTER'), [
+        DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME'))),
+        DataValue(
+            'Baudrate',
+            DataQuery(
+                DataQuery.XPath('CAN-CLUSTER-VARIANTS/CAN-CLUSTER-CONDITIONAL/BAUDRATE'),
+                format=DataQuery.Format.Integer)),
+        DataValue('Language', DataQuery(DataQuery.XPath('LONG-NAME/L-4'), value='@L')),
+        DataValue('Long Name', DataQuery(DataQuery.XPath('LONG-NAME/L-4')))
+    ])
+
+
+@pytest.fixture
+def complex_object_by_xpath():
+    return DataObject('CAN Cluster', DataQuery.XPath('.//CAN-CLUSTER'), [
+        DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME'))),
+        DataValue(
+            'Baudrate',
+            DataQuery(
+                DataQuery.XPath('CAN-CLUSTER-VARIANTS/CAN-CLUSTER-CONDITIONAL/BAUDRATE'),
+                format=DataQuery.Format.Integer)),
+        DataObject('Long Name', DataQuery.XPath('LONG-NAME/L-4'), [
+            DataValue('Language', DataQuery(DataQuery.XPath('.'), value='@L')),
+            DataValue('Name', DataQuery(DataQuery.XPath('.')))
+        ])
     ])
 
 
@@ -43,8 +89,8 @@ def test_config_must_have_root_object(only_value):
         query_handler.find_values(arxml, data_objects)
 
 
-def test_find_object_by_reference(can_object):
-    data_objects = [can_object]
+def test_find_object_by_reference(simple_object_by_ref):
+    data_objects = [simple_object_by_ref]
     query_handler = QueryHandler()
 
     data_results = query_handler.find_values(arxml, data_objects)
@@ -87,3 +133,55 @@ def test_raises_value_error_if_no_attribute_found_with_specified_name():
 
     with pytest.raises(ValueError):
         query_handler.find_values(arxml, [data_object])
+
+
+def test_find_complex_object_by_reference(complex_object_by_ref):
+    data_objects = [complex_object_by_ref]
+    query_handler = QueryHandler()
+
+    data_results = query_handler.find_values(arxml, data_objects)
+
+    assert isinstance(data_results, dict)
+    assert 'CAN Cluster' in data_results
+    can_cluster = data_results['CAN Cluster']
+    assert isinstance(can_cluster, dict)
+    assert can_cluster['Name'] == 'CAN'
+    assert can_cluster['Baudrate'] == 500000
+    assert 'Long Name' in can_cluster
+    long_name = can_cluster['Long Name']
+    assert long_name['Language'] == 'FOR-ALL'
+    assert long_name['Name'] == 'CAN Channel 1'
+
+
+def test_find_simple_object_by_xpath(simple_object_by_xpath):
+    data_objects = [simple_object_by_xpath]
+    query_handler = QueryHandler()
+
+    data_results = query_handler.find_values(arxml, data_objects)
+
+    assert isinstance(data_results, dict)
+    assert 'CAN Cluster' in data_results
+    can_cluster = data_results['CAN Cluster']
+    assert isinstance(can_cluster, dict)
+    assert can_cluster['Name'] == 'CAN'
+    assert can_cluster['Baudrate'] == 500000
+    assert can_cluster['Language'] == 'FOR-ALL'
+    assert can_cluster['Long Name'] == 'CAN Channel 1'
+
+
+def test_find_complex_object_by_xpath(complex_object_by_xpath):
+    data_objects = [complex_object_by_xpath]
+    query_handler = QueryHandler()
+
+    data_results = query_handler.find_values(arxml, data_objects)
+
+    assert isinstance(data_results, dict)
+    assert 'CAN Cluster' in data_results
+    can_cluster = data_results['CAN Cluster']
+    assert isinstance(can_cluster, dict)
+    assert can_cluster['Name'] == 'CAN'
+    assert can_cluster['Baudrate'] == 500000
+    assert 'Long Name' in can_cluster
+    long_name = can_cluster['Long Name']
+    assert long_name['Language'] == 'FOR-ALL'
+    assert long_name['Name'] == 'CAN Channel 1'
