@@ -24,7 +24,7 @@ def test_build_simple_data_object_with_xpath():
     assert isinstance(data_value.query, DataQuery)
     assert isinstance(data_value.query.path, DataQuery.XPath)
     assert data_value.query.path.xpath == '/SHORT-NAME'
-    assert data_value.query.path.is_relative is True
+    assert data_value.query.path.is_reference is False
     assert data_value.query.value == 'text'
     assert data_value.query.format == DataQuery.Format.String
 
@@ -47,13 +47,28 @@ def test_build_simple_data_object_with_reference():
     assert isinstance(data_value.query, DataQuery)
     assert isinstance(data_value.query.path, DataQuery.XPath)
     assert data_value.query.path.xpath == '/SHORT-NAME'
-    assert data_value.query.path.is_relative is True
+    assert data_value.query.path.is_reference is False
     assert data_value.query.value == 'text'
     assert data_value.query.format == DataQuery.Format.String
 
 
 def test_object_is_missing_xpath_or_ref():
     config = {'SimpleObject': {'SimpleValue': '/SHORT-NAME'}}
+    builder = QueryBuilder()
+
+    with pytest.raises(ValueError):
+        builder.build(config)
+
+
+def test_object_with_xpath_and_ref():
+    config = {
+        'SimpleObject': {
+            '_xpath': '/path/element',
+            '_ref': '/ref/element',
+            'SimpleValue': '/SHORT-NAME'
+        }
+    }
+
     builder = QueryBuilder()
 
     with pytest.raises(ValueError):
@@ -227,3 +242,25 @@ def test_data_objects_can_contain_data_object():
     assert data_value.query.path.xpath == '/date_time'
     assert data_value.query.value == '@T'
     assert data_value.query.format == DataQuery.Format.Date
+
+
+def test_object_contains_xref():
+    config = {
+        'BaseObject': {
+            '_xpath': '/path/element',
+            'SimpleValue': '/SHORT-NAME',
+            'ReferredObject': {
+                '_xref': '/ref/object',
+                'Value': '/value'
+            }
+        }
+    }
+
+    builder = QueryBuilder()
+    data_objects = builder.build(config)
+    referred_object = data_objects[0].values[1]
+
+    assert isinstance(referred_object, DataObject)
+    assert isinstance(referred_object.path, DataQuery.XPath)
+    assert referred_object.path.xpath == '/ref/object'
+    assert referred_object.path.is_reference == True

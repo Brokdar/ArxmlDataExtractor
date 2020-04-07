@@ -93,6 +93,19 @@ def multi_value_complex_object():
                         'TRANSMISSION-MODE-DECLARATION/TRANSMISSION-MODE-TRUE-TIMING/CYCLIC-TIMING/TIME-PERIOD/VALUE'
                     ),
                     format=DataQuery.Format.Float))
+        ]),
+        DataObject('Signal Mappings', DataQuery.XPath('.//I-SIGNAL-TO-I-PDU-MAPPING'), [
+            DataValue('Signal Name', DataQuery(DataQuery.XPath('SHORT-NAME'))),
+            DataValue('Start Position',
+                      DataQuery(DataQuery.XPath('START-POSITION'),
+                                format=DataQuery.Format.Integer)),
+            DataValue('Transfer Property', DataQuery(DataQuery.XPath('TRANSFER-PROPERTY'))),
+            DataObject('Signal', DataQuery.XPath('I-SIGNAL-REF', is_reference=True), [
+                DataValue('Init Value',
+                          DataQuery(DataQuery.XPath('.//VALUE'), format=DataQuery.Format.Integer)),
+                DataValue('Length',
+                          DataQuery(DataQuery.XPath('LENGTH'), format=DataQuery.Format.Integer))
+            ])
         ])
     ])
 
@@ -182,12 +195,28 @@ def test_find_all_objects_by_xpath(multi_value_complex_object):
     assert pdus[0]['Unused Bit Pattern'] == 0
     assert pdus[0]['Timing Specification']['Minimum Delay'] == 0
     assert pdus[0]['Timing Specification']['Cyclic Timing'] == 0.1
+    assert pdus[0]['Signal Mappings']['Signal Name'] == 'Signal1'
+    assert pdus[0]['Signal Mappings']['Start Position'] == 0
+    assert pdus[0]['Signal Mappings']['Transfer Property'] == 'PENDING'
+    assert pdus[0]['Signal Mappings']['Signal']['Init Value'] == 128
+    assert pdus[0]['Signal Mappings']['Signal']['Length'] == 5
+
     assert isinstance(pdus[1], dict)
     assert pdus[1]['Name'] == 'RxMessage'
-    assert pdus[1]['Length'] == 1
+    assert pdus[1]['Length'] == 2
     assert pdus[1]['Unused Bit Pattern'] == 0
     assert pdus[1]['Timing Specification']['Minimum Delay'] == 0
     assert pdus[1]['Timing Specification']['Cyclic Timing'] == 0.1
+    assert pdus[1]['Signal Mappings'][0]['Signal Name'] == 'Signal2'
+    assert pdus[1]['Signal Mappings'][0]['Start Position'] == 0
+    assert pdus[1]['Signal Mappings'][0]['Transfer Property'] == 'PENDING'
+    assert pdus[1]['Signal Mappings'][0]['Signal']['Init Value'] == 0
+    assert pdus[1]['Signal Mappings'][0]['Signal']['Length'] == 1
+    assert pdus[1]['Signal Mappings'][1]['Signal Name'] == 'Signal3'
+    assert pdus[1]['Signal Mappings'][1]['Start Position'] == 1
+    assert pdus[1]['Signal Mappings'][1]['Transfer Property'] == 'PENDING'
+    assert pdus[1]['Signal Mappings'][1]['Signal']['Init Value'] == 0
+    assert pdus[1]['Signal Mappings'][1]['Signal']['Length'] == 1
 
 
 def test_invalid_file_raises_value_error():

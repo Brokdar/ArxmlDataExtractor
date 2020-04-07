@@ -42,15 +42,28 @@ class QueryHandler():
                                node: Element) -> List[Element]:
         if isinstance(path, DataQuery.XPath):
             xpath = self.asr_parser.assemble_xpath(path.xpath)
-            return self.asr_parser.find(node, xpath)
+            elements = self.asr_parser.find(node, xpath)
+
+            if path.is_reference is False:
+                return elements
+
+            if elements:
+                ref = elements[0].text
+                return [self.__get_element_by_ref(ref)]
+            else:
+                raise ValueError(f'Unable to find referenced element with path: {path.xpath}')
+
         elif isinstance(path, DataQuery.Reference):
-            element = self.asr_parser.find_reference(path.ref)
-            if element is None:
-                raise ValueError(f'No reference found with "{path.ref}"')
-            return [element]
+            return [self.__get_element_by_ref(path.ref)]
         else:
             raise TypeError(
                 f'Unexpected error while finding elements with path of type: {type(path)}')
+
+    def __get_element_by_ref(self, ref: str) -> Element:
+        element = self.asr_parser.find_reference(ref)
+        if element is None:
+            raise ValueError(f'No reference found with "{ref}"')
+        return element
 
     def __parse_data_values(self, values: List[Union[DataValue, DataObject]],
                             node: Element) -> dict:
