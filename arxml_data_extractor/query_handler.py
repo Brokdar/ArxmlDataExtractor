@@ -39,6 +39,7 @@ class QueryHandler():
 
     def __parse_data_values(self, values: List[Union[DataValue, DataObject]],
                             node: Element) -> dict:
+
         results = {}
         for value in values:
             results[value.name] = self.__parse_data_value(value.query, node)
@@ -63,8 +64,10 @@ class QueryHandler():
         elif value == 'tag':
             return node.tag
         elif value.startswith('@'):
-            attribute = node.attribute[value]
-            return attribute
+            attribute = value[1:]
+            if attribute in node.attrib:
+                return node.attrib[attribute]
+            raise ValueError(f'No attribute found with name {attribute}')
         else:
             raise Exception(f'Unexpected error occurred while parsing value: {value}')
 

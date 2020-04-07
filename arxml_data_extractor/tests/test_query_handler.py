@@ -23,7 +23,9 @@ def can_object():
             'Baudrate',
             DataQuery(
                 DataQuery.XPath('CAN-CLUSTER-VARIANTS/CAN-CLUSTER-CONDITIONAL/BAUDRATE'),
-                format=DataQuery.Format.Integer))
+                format=DataQuery.Format.Integer)),
+        DataValue('Language', DataQuery(DataQuery.XPath('LONG-NAME/L-4'), value='@L')),
+        DataValue('Long Name', DataQuery(DataQuery.XPath('LONG-NAME/L-4')))
     ])
 
 
@@ -53,11 +55,34 @@ def test_find_object_by_reference(can_object):
     assert isinstance(can_cluster, dict)
     assert can_cluster['Name'] == 'CAN'
     assert can_cluster['Baudrate'] == 500000
+    assert can_cluster['Language'] == 'FOR-ALL'
+    assert can_cluster['Long Name'] == 'CAN Channel 1'
 
 
 def test_raises_value_error_if_reference_not_found(only_value):
     data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN1'),
                              [DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME')))])
+
+    query_handler = QueryHandler()
+
+    with pytest.raises(ValueError):
+        query_handler.find_values(arxml, [data_object])
+
+
+def test_raises_value_error_if_no_element_found_with_xpath():
+    data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'),
+                             [DataValue('Name', DataQuery(DataQuery.XPath('/SHORT-NAME')))])
+
+    query_handler = QueryHandler()
+
+    with pytest.raises(ValueError):
+        query_handler.find_values(arxml, [data_object])
+
+
+def test_raises_value_error_if_no_attribute_found_with_specified_name():
+    data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'),
+                             [DataValue('UUID', DataQuery(DataQuery.XPath('.'), value='@S'))])
+
     query_handler = QueryHandler()
 
     with pytest.raises(ValueError):
