@@ -27,7 +27,9 @@ class QueryHandler():
 
         return results
 
-    def __parse_data_object(self, data_object: DataObject, node: Element = None) -> dict:
+    def __parse_data_object(self,
+                            data_object: DataObject,
+                            node: Element = None) -> Union[list, dict]:
         if node is None:
             node = self.asr_parser.root
 
@@ -38,11 +40,15 @@ class QueryHandler():
             values = self.__parse_data_values(data_object.values, element)
             return values
         else:
+            values = []
             xpath = self.asr_parser.assemble_xpath(data_object.path.xpath)
             elements = self.asr_parser.find(node, xpath)
             for element in elements:
-                values = self.__parse_data_values(data_object.values, element)
-                return values
+                values.append(self.__parse_data_values(data_object.values, element))
+
+            if len(values) == 1:
+                return values[0]
+            return values
 
     def __parse_data_values(self, values: List[Union[DataValue, DataObject]],
                             node: Element) -> dict:
