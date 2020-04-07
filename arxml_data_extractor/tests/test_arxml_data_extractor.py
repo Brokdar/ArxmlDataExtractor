@@ -7,7 +7,7 @@ arxml = 'arxml_data_extractor/tests/test.arxml'
 
 def test_extracting_simple_object():
     yaml = """
-    'CAN Cluster': 
+    'CAN Cluster':
         '_ref': '/Cluster/CAN'
         'Name': 'SHORT-NAME'
         'Baudrate': 'text>int:CAN-CLUSTER-VARIANTS/CAN-CLUSTER-CONDITIONAL/BAUDRATE'
