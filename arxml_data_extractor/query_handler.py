@@ -1,5 +1,3 @@
-import re
-
 from typing import List, Union, Any
 from lxml.etree import Element
 
@@ -21,7 +19,7 @@ class QueryHandler():
         for data_object in data_objects:
             if (not isinstance(data_object, DataObject)):
                 raise TypeError(
-                    f'Root must be of type DataObject: currently -> {type(data_object)}')
+                    f'Root element must be of type DataObject: currently -> {type(data_object)}')
 
             results[data_object.name] = self.__parse_data_object(data_object)
 
@@ -33,26 +31,29 @@ class QueryHandler():
         if node is None:
             node = self.asr_parser.root
 
-        if isinstance(data_object.path, DataQuery.Reference):
-            element = self.asr_parser.find_reference(data_object.path.ref)
-            if element is None:
-                raise ValueError(f'No reference found with "{data_object.path.ref}".')
-            values = self.__parse_data_values(data_object.values, element)
-            return values
-        else:
-            values = []
-            xpath = self.asr_parser.assemble_xpath(data_object.path.xpath)
-            elements = self.asr_parser.find(node, xpath)
-            for element in elements:
-                values.append(self.__parse_data_values(data_object.values, element))
+        values = []
+        elements = self.__get_elements_by_path(data_object.path, node)
+        for element in elements:
+            values.append(self.__parse_data_values(data_object.values, element))
 
-            if len(values) == 1:
-                return values[0]
-            return values
+        return values[0] if len(values) == 1 else values
+
+    def __get_elements_by_path(self, path: Union[DataQuery.XPath, DataQuery.Reference],
+                               node: Element) -> List[Element]:
+        if isinstance(path, DataQuery.XPath):
+            xpath = self.asr_parser.assemble_xpath(path.xpath)
+            return self.asr_parser.find(node, xpath)
+        elif isinstance(path, DataQuery.Reference):
+            element = self.asr_parser.find_reference(path.ref)
+            if element is None:
+                raise ValueError(f'No reference found with "{path.ref}"')
+            return [element]
+        else:
+            raise TypeError(
+                f'Unexpected error while finding elements with path of type: {type(path)}')
 
     def __parse_data_values(self, values: List[Union[DataValue, DataObject]],
                             node: Element) -> dict:
-
         results = {}
         for value in values:
             if isinstance(value, DataObject):
@@ -67,7 +68,7 @@ class QueryHandler():
             xpath = self.asr_parser.assemble_xpath(query.path.xpath)
             element = next(iter(self.asr_parser.find(node, xpath)), None)
             if element is None:
-                raise ValueError(f'No Element found with XPath "{query.path.xpath}".')
+                raise ValueError(f'No Element found with XPath "{query.path.xpath}"')
         else:
             return None
 
@@ -85,7 +86,7 @@ class QueryHandler():
                 return node.attrib[attribute]
             raise ValueError(f'No attribute found with name {attribute}')
         else:
-            raise Exception(f'Unexpected error occurred while parsing value: {value}')
+            raise Exception(f'Unexpected error while parsing value: {value}')
 
     def __convert_value(self, value: str, format: DataQuery.Format):
         if format == DataQuery.Format.String:
@@ -97,4 +98,4 @@ class QueryHandler():
         elif format == DataQuery.Format.Date:
             pass
         else:
-            raise Exception(f'Unexpected error occurred while converting {value} -> {format}')
+            raise Exception(f'Unexpected error while converting {value} -> {format}')
