@@ -20,14 +20,19 @@ class QueryBuilder():
         return data_objects
 
     def __parse_object(self, name: str, values: dict) -> DataObject:
-        if ('_xpath' in values) == ('_ref' in values):
+        required = {'_xpath', '_xref', '_ref'}
+        path_value = required & values.keys()
+        if len(path_value) != 1:
             raise ValueError(
                 'DataObject must have exactly one of the following elements specified: _path or _ref'
             )
 
-        if '_xpath' in values:
+        if '_xpath' in path_value:
             xpath = values['_xpath'].split(self.__path_separator)[-1]
-            path = DataQuery.XPath(xpath, False)
+            path = DataQuery.XPath(xpath)
+        elif '_xref' in path_value:
+            xpath = values['_xref'].split(self.__path_separator)[-1]
+            path = DataQuery.XPath(xpath, True)
         else:
             ref = values['_ref'].split(self.__path_separator)[-1]
             path = DataQuery.Reference(ref)

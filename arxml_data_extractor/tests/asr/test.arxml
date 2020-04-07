@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AUTOSAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns="http://autosar.org/schema/r4.0" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_4-3-0.xsd">
+    <AR-PACKAGES>
+        <!-- /SystemSignals -->
+        <AR-PACKAGE>
+            <SHORT-NAME>SystemSignals</SHORT-NAME>
+            <ELEMENTS>
+                <!-- SystemSignals/SignalData1 -->
+                <SYSTEM-SIGNAL>
+                    <SHORT-NAME>SignalData1</SHORT-NAME>
+                    <DYNAMIC-LENGTH>false</DYNAMIC-LENGTH>
+                </SYSTEM-SIGNAL>
+                <!-- SystemSignals/SignalData2 -->
+                <SYSTEM-SIGNAL>
+                    <SHORT-NAME>SignalData2</SHORT-NAME>
+                    <DYNAMIC-LENGTH>false</DYNAMIC-LENGTH>
+                </SYSTEM-SIGNAL>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <!-- /Pdus -->
+        <AR-PACKAGE>
+            <SHORT-NAME>Pdus</SHORT-NAME>
+            <AR-PACKAGES>
+                <!-- /Pdus/Bus -->
+                <SHORT-NAME>Bus</SHORT-NAME>
+                <AR-PACKAGE>
+                    <!-- /Pdus/Bus/PduCollection -->
+                    <SHORT-NAME>PduCollection</SHORT-NAME>
+                    <ELEMENTS>
+                        <I-SIGNAL-I-PDU>
+                            <!-- /Pdus/Bus/PduCollection/MyPdu -->
+                            <SHORT-NAME>MyPdu</SHORT-NAME>
+                            <I-PDU-TIMING-SPECIFICATIONS>
+                                <I-PDU-TIMING>
+                                    <MINIMUM-DELAY>0.02</MINIMUM-DELAY>
+                                    <TRANSMISSION-MODE-DECLARATION>
+                                        <TRANSMISSION-MODE-TRUE-TIMING>
+                                            <EVENT-CONTROLLED-TIMING>
+                                                <NUMBER-OF-REPETITIONS>0</NUMBER-OF-REPETITIONS>
+                                            </EVENT-CONTROLLED-TIMING>
+                                        </TRANSMISSION-MODE-TRUE-TIMING>
+                                    </TRANSMISSION-MODE-DECLARATION>
+                                </I-PDU-TIMING>
+                            </I-PDU-TIMING-SPECIFICATIONS>
+                            <I-SIGNAL-TO-PDU-MAPPINGS>
+                                <!-- /Pdus/Bus/PduCollection/MyPdu/SignalData1 -->
+                                <I-SIGNAL-TO-I-PDU-MAPPING>
+                                    <SHORT-NAME>SignalData1</SHORT-NAME>
+                                    <I-SIGNAL-REF DEST="I-SIGNAL">/ISignals/Bus/PduCollection/MyPdu/SignalData1</I-SIGNAL-REF>
+                                    <PACKING-BYTE-ORDER>MOST-SIGNIFICANT-BYTE-LAST</PACKING-BYTE-ORDER>
+                                    <START-POSITION>0</START-POSITION>
+                                </I-SIGNAL-TO-I-PDU-MAPPING>
+                                <!-- /Pdus/Bus/PduCollection/MyPdu/SignalData2 -->
+                                <I-SIGNAL-TO-I-PDU-MAPPING>
+                                    <SHORT-NAME>SignalData2</SHORT-NAME>
+                                    <I-SIGNAL-REF DEST="I-SIGNAL">/ISignals/Bus/PduCollection/MyPdu/SignalData2</I-SIGNAL-REF>
+                                    <PACKING-BYTE-ORDER>MOST-SIGNIFICANT-BYTE-LAST</PACKING-BYTE-ORDER>
+                                    <START-POSITION>8</START-POSITION>
+                                </I-SIGNAL-TO-I-PDU-MAPPING>
+                            </I-SIGNAL-TO-PDU-MAPPINGS>
+                        </I-SIGNAL-I-PDU>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+            </AR-PACKAGES>
+        </AR-PACKAGE>
+        <!-- /ISignals -->
+        <AR-PACKAGE>
+            <SHORT-NAME>ISignals</SHORT-NAME>
+            <AR-PACKAGES>
+                <!-- /ISignals/Bus -->
+                <AR-PACKAGE>
+                    <SHORT-NAME>Bus</SHORT-NAME>
+                    <!-- /ISignals/Bus/PduCollection -->
+                    <AR-PACKAGES>
+                        <SHORT-NAME>PduCollection</SHORT-NAME>
+                        <!-- /ISignals/Bus/PduCollection/MyPdu -->
+                        <AR-PACKAGE>
+                            <SHORT-NAME>MyPdu</SHORT-NAME>
+                            <ELEMENTS>
+                                <!-- /ISignals/Bus/PduCollection/MyPdu/SignalData1 -->
+                                <I-SIGNAL>
+                                    <SHORT-NAME>SignalData1</SHORT-NAME>
+                                    <I-SIGNAL-TYPE>PRIMITIVE</I-SIGNAL-TYPE>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                    <LENGTH>1</LENGTH>
+                                    <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/SystemSignals/SignalData1</SYSTEM-SIGNAL-REF>
+                                </I-SIGNAL>
+                                <!-- /ISignals/Bus/PduCollection/MyPdu/SignalData2 -->
+                                <I-SIGNAL>
+                                    <SHORT-NAME>SignalData2</SHORT-NAME>
+                                    <I-SIGNAL-TYPE>PRIMITIVE</I-SIGNAL-TYPE>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                    <LENGTH>1</LENGTH>
+                                    <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/SystemSignals/SignalData2</SYSTEM-SIGNAL-REF>
+                                </I-SIGNAL>
+                            </ELEMENTS>
+                        </AR-PACKAGE>
+                    </AR-PACKAGES>
+                </AR-PACKAGE>
+            </AR-PACKAGES>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>

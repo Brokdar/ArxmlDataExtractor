@@ -14,7 +14,7 @@ class DataQuery():
     @dataclass
     class XPath():
         xpath: str
-        is_relative: bool = True
+        is_reference: bool = False
 
     class Format(Enum):
         String = 0
