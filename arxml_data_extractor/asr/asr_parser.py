@@ -31,13 +31,13 @@ class AsrParser():
         return self._packages
 
     def find_all_elements(self, path: str) -> list:
-        """Finds all elements specified by the XML element path. The path can 
-        either be a simple element name, a complex xml path with namespaces 
+        """Finds all elements specified by the XML element path. The path can
+        either be a simple element name, a complex xml path with namespaces
         or a combination of both.
-        
+
         Arguments:
             element_path {str} -- element name, XML element path or a combination
-        
+
         Returns:
             list -- all found elements reachable with the specified element path
         """
@@ -46,10 +46,10 @@ class AsrParser():
 
     def find_reference(self, reference: str) -> etree.Element:
         """Tries to find the element described by the AUTOSAR reference
-        
+
         Arguments:
             reference {str} -- AUTOSAR reference
-        
+
         Returns:
             etree.Element -- xml element node or None
         """
@@ -89,11 +89,11 @@ class AsrParser():
     @staticmethod
     def find(base: etree.Element, xpath: Union[str, etree.XPath]) -> list:
         """Evaluates an XPath expression on the given base element
-        
+
         Arguments:
             base {etree.Element} -- base element, starting point
             xpath {str} -- XPath expression defined by W3C consortium
-        
+
         Returns:
             list -- results of XPath evaluation
         """
@@ -104,7 +104,7 @@ class AsrParser():
     @classmethod
     def find_elements(cls, base: etree.Element, path: str) -> list:
         """Finds all child elements of the given base element defined by the given Element structure
-        
+
         Arguments:
             base {etree.Element} -- base element, starting point
             path {str} -- XML element structure with or without namespace
@@ -133,7 +133,7 @@ class AsrParser():
             base {etree.Element} -- base element, starting point
             path {str} -- element name, XML element path or a combination
             name {str} -- shortname of the element
-        
+
         Returns:
             etree.Element -- found element or None
         """
@@ -144,10 +144,10 @@ class AsrParser():
     @classmethod
     def get_shortname(cls, element: etree.Element) -> Union[str, None]:
         """Gets the shortname of an element
-        
+
         Arguments:
             element {etree.Element} -- xml element with shortname
-        
+
         Returns:
             str -- shortname if found otherwise None
         """

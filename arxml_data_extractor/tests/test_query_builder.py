@@ -263,4 +263,4 @@ def test_object_contains_xref():
     assert isinstance(referred_object, DataObject)
     assert isinstance(referred_object.path, DataQuery.XPath)
     assert referred_object.path.xpath == '/ref/object'
-    assert referred_object.path.is_reference == True
+    assert referred_object.path.is_reference is True
