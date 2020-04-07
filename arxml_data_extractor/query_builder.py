@@ -39,7 +39,7 @@ class QueryBuilder():
 
         data_values = []
         for key, value in values.items():
-            if key == '_xpath' or key == '_ref':
+            if key in required:
                 continue
 
             if isinstance(value, dict):
