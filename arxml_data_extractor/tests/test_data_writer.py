@@ -55,7 +55,18 @@ def test_print_data(data):
 def test_write_to_file(data):
     file = Path('result.txt')
     writer = DataWriter()
+
     writer.write(str(file), data)
 
-    assert Path(file).exists()
+    assert file.exists()
+    file.unlink()
+
+
+def test_write_to_json(data):
+    file = Path('result.json')
+    writer = DataWriter()
+
+    writer.write_json(str(file), data)
+
+    assert file.exists()
     file.unlink()

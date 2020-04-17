@@ -1,3 +1,6 @@
+import json
+
+
 class DataWriter():
 
     def to_text(self, data: dict):
@@ -22,3 +25,7 @@ class DataWriter():
     def write(self, file: str, data: dict):
         with open(file, 'w') as f:
             f.write(self.to_text(data))
+
+    def write_json(self, file: str, data: dict):
+        with open(file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
