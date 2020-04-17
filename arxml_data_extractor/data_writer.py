@@ -18,3 +18,7 @@ class DataWriter():
                 self.__data_to_text(n, value, text, indent)
         else:
             text.append(f'{"  " * indent}{name}: {data}')
+
+    def write(self, file: str, data: dict):
+        with open(file, 'w') as f:
+            f.write(self.to_text(data))
