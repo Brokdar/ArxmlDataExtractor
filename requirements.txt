@@ -3,3 +3,5 @@ pylint
 yapf
 lxml
 pyyaml
+pathlib
+xlsxwriter
