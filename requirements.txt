@@ -4,3 +4,4 @@ yapf
 lxml
 pyyaml
 pathlib
+xlsxwriter
