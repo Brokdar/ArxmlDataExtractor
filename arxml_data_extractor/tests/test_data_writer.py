@@ -5,7 +5,6 @@ from arxml_data_extractor.data_writer import DataWriter
 from arxml_data_extractor.query.data_value import DataValue
 from arxml_data_extractor.query.data_query import DataQuery
 from arxml_data_extractor.query.data_object import DataObject
-from arxml_data_extractor.query_handler import QueryHandler
 
 
 @pytest.fixture
