@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 
 from arxml_data_extractor.query.data_object import DataObject
 from arxml_data_extractor.query.data_query import DataQuery
