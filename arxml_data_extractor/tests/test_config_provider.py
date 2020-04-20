@@ -31,7 +31,7 @@ def test_raises_value_error_if_not_yaml():
 
 
 def test_raises_exception_if_file_not_exists():
-    not_existing_file = 'config.yaml'
+    not_existing_file = 'non-existing.yaml'
 
     provider = ConfigProvider()
 

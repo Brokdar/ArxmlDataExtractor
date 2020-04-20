@@ -219,6 +219,24 @@ def test_find_all_objects_by_xpath(multi_value_complex_object):
     assert pdus[1]['Signal Mappings'][1]['Signal']['Length'] == 1
 
 
+def test_handle_inline_reference():
+    data_object = DataObject('SignalMapping', DataQuery.Reference('/PDU/TxMessage'), [
+        DataValue(
+            'Name',
+            DataQuery(
+                DataQuery.XPath(
+                    '&(I-SIGNAL-TO-PDU-MAPPINGS/I-SIGNAL-TO-I-PDU-MAPPING/I-SIGNAL-REF)SHORT-NAME',
+                    True)))
+    ])
+
+    query_handler = QueryHandler()
+    results = query_handler.find_values(arxml, [data_object])
+
+    assert isinstance(results, dict)
+    assert isinstance(results['SignalMapping'], dict)
+    assert results['SignalMapping']['Name'] == 'Signal1'
+
+
 def test_invalid_file_raises_value_error():
     with pytest.raises(ValueError):
         query_handler = QueryHandler()

@@ -76,12 +76,18 @@ class QueryBuilder():
 
         return DataQuery(path, value, format)
 
-    def __get_path(self, path: str) -> Union[DataQuery.XPath, DataQuery.Reference]:
+    def __get_path(self, path: str) -> DataQuery.XPath:
         illegal_character = [self.__path_separator, self.__format_separator]
         if any(c in illegal_character for c in path):
             raise ValueError(f'{path} contains illegal characters [:>]')
 
-        return DataQuery.XPath(path)
+        if path[0] != '&':
+            return DataQuery.XPath(path)
+        else:
+            if path[1] != '(':
+                raise ValueError(
+                    f'Inline Reference detected: parantheses needs to follow after "&"')
+            return DataQuery.XPath(path, True)
 
     def __get_value(self, value: str) -> str:
         if (value == '') or (value == 'tag') or (value == 'text'):

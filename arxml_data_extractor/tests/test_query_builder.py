@@ -264,3 +264,26 @@ def test_object_contains_xref():
     assert isinstance(referred_object.path, DataQuery.XPath)
     assert referred_object.path.xpath == '/ref/object'
     assert referred_object.path.is_reference is True
+
+
+def test_inline_reference():
+    config = {'SimpleObject': {'_ref': '/path/element', 'RefValue': '&(path-to-element)value'}}
+
+    builder = QueryBuilder()
+    data_objects = builder.build(config)
+    simple_object = data_objects[0]
+    ref_value = simple_object.values[0]
+
+    assert isinstance(simple_object, DataObject)
+    assert isinstance(ref_value, DataValue)
+    assert isinstance(ref_value.query.path, DataQuery.XPath)
+    assert ref_value.query.path.xpath == '&(path-to-element)value'
+    assert ref_value.query.path.is_reference is True
+
+
+def test_invalid_inline_reference():
+    config = {'SimpleObject': {'_ref': '/path/element', 'RefValue': '&path-to-elementvalue'}}
+    builder = QueryBuilder()
+
+    with pytest.raises(ValueError):
+        builder.build(config)
