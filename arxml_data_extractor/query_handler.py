@@ -98,7 +98,9 @@ class QueryHandler():
     def __get_inline_reference(self, path: DataQuery.XPath, node: Element) -> Element:
         start_inline_ref = '&('
         if not path.xpath.startswith(start_inline_ref):
-            raise ValueError('...')
+            raise ValueError(
+                'Specified inline reference XPath contains invalid syntax. "&(<path-to-element>)<path-to-value>"'
+            )
 
         parantheses_count = 1
         path_to_value = None
@@ -113,11 +115,11 @@ class QueryHandler():
                     path_to_value = path.xpath[i + 1:]
                     break
         if path_to_value is None or path_to_reference is None:
-            raise Exception(f'Missmatching parantheses in "{path.xpath}"')
+            raise Exception(f'Mismatching parantheses in "{path.xpath}"')
 
         reference = self.__get_element_by_xpath(path_to_reference, node)
         if 'REF' not in reference.tag:
-            raise ValueError(f'No reference found with "{path.xpath}')
+            raise ValueError(f'No reference found at "{path.xpath}')
 
         referred_element = self.__get_element_by_ref(reference.text)
         return self.__get_element_by_xpath(path_to_value, referred_element)
