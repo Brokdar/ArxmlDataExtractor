@@ -78,15 +78,51 @@ class QueryHandler():
 
     def __parse_data_value(self, query: DataQuery, node: Element) -> Any:
         if isinstance(query.path, DataQuery.XPath):
-            xpath = self.asr_parser.assemble_xpath(query.path.xpath)
-            element = next(iter(self.asr_parser.find(node, xpath)), None)
-            if element is None:
-                raise ValueError(f'No Element found with XPath "{query.path.xpath}"')
+            if query.path.is_reference:
+                element = self.__get_inline_reference(query.path, node)
+            else:
+                element = self.__get_element_by_xpath(query.path.xpath, node)
         else:
             return None
 
         value = self.__get_value(query.value, element)
         return self.__convert_value(value, query.format)
+
+    def __get_element_by_xpath(self, path: str, node: Element) -> Element:
+        xpath = self.asr_parser.assemble_xpath(path)
+        element = next(iter(self.asr_parser.find(node, xpath)), None)
+        if element is None:
+            raise ValueError(f'No Element found with XPath "{path}"')
+        return element
+
+    def __get_inline_reference(self, path: DataQuery.XPath, node: Element) -> Element:
+        start_inline_ref = '&('
+        if not path.xpath.startswith(start_inline_ref):
+            raise ValueError(
+                'Specified inline reference XPath contains invalid syntax. "&(<path-to-element>)<path-to-value>"'
+            )
+
+        parantheses_count = 1
+        path_to_value = None
+        path_to_reference = None
+        for i, c in enumerate(path.xpath[len(start_inline_ref):], len(start_inline_ref)):
+            if c == '(':
+                parantheses_count += 1
+            elif c == ')':
+                parantheses_count -= 1
+                if parantheses_count == 0:
+                    path_to_reference = path.xpath[len(start_inline_ref):i]
+                    path_to_value = path.xpath[i + 1:]
+                    break
+        if path_to_value is None or path_to_reference is None:
+            raise Exception(f'Mismatching parantheses in "{path.xpath}"')
+
+        reference = self.__get_element_by_xpath(path_to_reference, node)
+        if 'REF' not in reference.tag:
+            raise ValueError(f'No reference found at "{path.xpath}')
+
+        referred_element = self.__get_element_by_ref(reference.text)
+        return self.__get_element_by_xpath(path_to_value, referred_element)
 
     def __get_value(self, value: str, node: Element) -> str:
         if value == 'text':
