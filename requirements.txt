@@ -6,3 +6,4 @@ pyyaml
 pathlib
 xlsxwriter
 arrow
+tqdm

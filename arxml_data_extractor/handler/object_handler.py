@@ -1,5 +1,6 @@
 from lxml.etree import Element
 from typing import Union, List, Any
+from tqdm import tqdm
 
 from arxml_data_extractor.handler import value_handler
 from arxml_data_extractor.handler.navigator import Navigator
@@ -15,12 +16,14 @@ class ObjectHandler():
         self.navigator = Navigator(parser)
 
     def handle(self, data_object: DataObject, node: Element = None) -> Union[list, dict]:
+        enable = True
         if node is None:
+            enable = False
             node = self.navigator.parser.root
 
         values = []
         elements = self.navigator.elements_by_path(data_object.path, node)
-        for element in elements:
+        for element in tqdm(elements, desc='Parse Root Objects', disable=enable):
             values.append(self.__handle_values(data_object.values, element))
 
         return values[0] if len(values) == 1 else values

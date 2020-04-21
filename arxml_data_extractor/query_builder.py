@@ -1,4 +1,5 @@
 from typing import List
+from tqdm import tqdm
 
 from arxml_data_extractor.query.data_object import DataObject
 from arxml_data_extractor.query.data_query import DataQuery
@@ -14,7 +15,7 @@ class QueryBuilder():
 
     def build(self, config: dict) -> List[DataObject]:
         data_objects = []
-        for key, value in config.items():
+        for key, value in tqdm(config.items(), desc='Building Queries'):
             data_object = self.__parse_object(key, value)
             data_objects.append(data_object)
         return data_objects
