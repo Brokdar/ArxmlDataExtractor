@@ -40,15 +40,12 @@ def run():
             f'Output file needs to be of type ".txt, .json or .xlsx". Currently: {output_file.suffix}'
         )
 
-    print('Parsing config file...')
     config_provider = ConfigProvider()
     config = config_provider.load(str(config_file))
 
-    print('Building queries...')
     query_builder = QueryBuilder()
     queries = query_builder.build(config)
 
-    print('Handle queries...')
     query_handler = QueryHandler()
     data = query_handler.handle_queries(str(input_file), queries)
 
