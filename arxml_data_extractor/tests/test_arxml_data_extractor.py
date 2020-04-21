@@ -22,7 +22,7 @@ def test_extracting_simple_object():
     queries = query_builder.build(config)
 
     query_handler = QueryHandler()
-    data = query_handler.find_values(arxml, queries)
+    data = query_handler.handle_queries(arxml, queries)
 
     assert isinstance(data, dict)
     assert data['CAN Cluster']['Name'] == 'CAN'
@@ -54,7 +54,7 @@ def test_extracting_nested_objects():
     queries = query_builder.build(config)
 
     query_handler = QueryHandler()
-    data = query_handler.find_values(arxml, queries)
+    data = query_handler.handle_queries(arxml, queries)
 
     assert isinstance(data, dict)
     assert len(data['PDUs']) == 2

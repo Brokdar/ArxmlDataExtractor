@@ -5,3 +5,4 @@ lxml
 pyyaml
 pathlib
 xlsxwriter
+arrow
