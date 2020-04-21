@@ -114,7 +114,7 @@ def test_find_object_by_reference(simple_object_by_ref):
     data_objects = [simple_object_by_ref]
     query_handler = QueryHandler()
 
-    data_results = query_handler.find_values(arxml, data_objects)
+    data_results = query_handler.handle_queries(arxml, data_objects)
 
     assert isinstance(data_results, dict)
     assert 'CAN Cluster' in data_results
@@ -130,7 +130,7 @@ def test_find_complex_object_by_reference(complex_object_by_ref):
     data_objects = [complex_object_by_ref]
     query_handler = QueryHandler()
 
-    data_results = query_handler.find_values(arxml, data_objects)
+    data_results = query_handler.handle_queries(arxml, data_objects)
 
     assert isinstance(data_results, dict)
     assert 'CAN Cluster' in data_results
@@ -148,7 +148,7 @@ def test_find_simple_object_by_xpath(simple_object_by_xpath):
     data_objects = [simple_object_by_xpath]
     query_handler = QueryHandler()
 
-    data_results = query_handler.find_values(arxml, data_objects)
+    data_results = query_handler.handle_queries(arxml, data_objects)
 
     assert isinstance(data_results, dict)
     assert 'CAN Cluster' in data_results
@@ -164,7 +164,7 @@ def test_find_complex_object_by_xpath(complex_object_by_xpath):
     data_objects = [complex_object_by_xpath]
     query_handler = QueryHandler()
 
-    data_results = query_handler.find_values(arxml, data_objects)
+    data_results = query_handler.handle_queries(arxml, data_objects)
 
     assert isinstance(data_results, dict)
     assert 'CAN Cluster' in data_results
@@ -182,7 +182,7 @@ def test_find_all_objects_by_xpath(multi_value_complex_object):
     data_objects = [multi_value_complex_object]
     query_handler = QueryHandler()
 
-    data_results = query_handler.find_values(arxml, data_objects)
+    data_results = query_handler.handle_queries(arxml, data_objects)
 
     assert isinstance(data_results, dict)
     assert 'PDUs' in data_results
@@ -230,7 +230,7 @@ def test_handle_inline_reference():
     ])
 
     query_handler = QueryHandler()
-    results = query_handler.find_values(arxml, [data_object])
+    results = query_handler.handle_queries(arxml, [data_object])
 
     assert isinstance(results, dict)
     assert isinstance(results['SignalMapping'], dict)
@@ -240,7 +240,7 @@ def test_handle_inline_reference():
 def test_invalid_file_raises_value_error():
     with pytest.raises(ValueError):
         query_handler = QueryHandler()
-        query_handler.find_values('test.json', [])
+        query_handler.handle_queries('test.json', [])
 
 
 def test_config_must_have_root_object(only_value):
@@ -248,7 +248,7 @@ def test_config_must_have_root_object(only_value):
     query_handler = QueryHandler()
 
     with pytest.raises(TypeError):
-        query_handler.find_values(arxml, data_objects)
+        query_handler.handle_queries(arxml, data_objects)
 
 
 def test_raises_value_error_if_reference_not_found(only_value):
@@ -258,7 +258,7 @@ def test_raises_value_error_if_reference_not_found(only_value):
     query_handler = QueryHandler()
 
     with pytest.raises(ValueError):
-        query_handler.find_values(arxml, [data_object])
+        query_handler.handle_queries(arxml, [data_object])
 
 
 def test_raises_value_error_if_no_element_found_with_xpath():
@@ -268,7 +268,7 @@ def test_raises_value_error_if_no_element_found_with_xpath():
     query_handler = QueryHandler()
 
     with pytest.raises(ValueError):
-        query_handler.find_values(arxml, [data_object])
+        query_handler.handle_queries(arxml, [data_object])
 
 
 def test_raises_value_error_if_no_attribute_found_with_specified_name():
@@ -278,4 +278,4 @@ def test_raises_value_error_if_no_attribute_found_with_specified_name():
     query_handler = QueryHandler()
 
     with pytest.raises(ValueError):
-        query_handler.find_values(arxml, [data_object])
+        query_handler.handle_queries(arxml, [data_object])
