@@ -136,6 +136,7 @@ class DataWriter():
                 else:
                     rows.append(res)
         else:
-            raise TypeError(f'data must be of type list or dict -> currently: {type(data)}')
+            raise TypeError(
+                f'DataWriter - invalid data type ({type(data)}). Data must be of type list or dict')
 
         return rows

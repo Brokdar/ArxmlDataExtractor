@@ -251,31 +251,33 @@ def test_config_must_have_root_object(only_value):
         query_handler.handle_queries(arxml, data_objects)
 
 
-def test_raises_value_error_if_reference_not_found(only_value):
+def test_returns_none_value_if_reference_not_found(only_value):
     data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN1'),
                              [DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME')))])
 
     query_handler = QueryHandler()
+    result = query_handler.handle_queries(arxml, [data_object])
 
-    with pytest.raises(ValueError):
-        query_handler.handle_queries(arxml, [data_object])
+    assert result['CAN Cluster'] == []
 
 
-def test_raises_value_error_if_no_element_found_with_xpath():
+def test_returns_none_value_if_no_element_found_with_xpath():
     data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'),
                              [DataValue('Name', DataQuery(DataQuery.XPath('/SHORT-NAME')))])
 
     query_handler = QueryHandler()
+    result = query_handler.handle_queries(arxml, [data_object])
 
-    with pytest.raises(ValueError):
-        query_handler.handle_queries(arxml, [data_object])
+    assert isinstance(result['CAN Cluster'], dict)
+    assert result['CAN Cluster']['Name'] is None
 
 
-def test_raises_value_error_if_no_attribute_found_with_specified_name():
+def test_returns_none_value_if_no_attribute_found_with_specified_name():
     data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN'),
                              [DataValue('UUID', DataQuery(DataQuery.XPath('.'), value='@S'))])
 
     query_handler = QueryHandler()
+    result = query_handler.handle_queries(arxml, [data_object])
 
-    with pytest.raises(ValueError):
-        query_handler.handle_queries(arxml, [data_object])
+    assert isinstance(result['CAN Cluster'], dict)
+    assert result['CAN Cluster']['UUID'] is None

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from enum import Enum
 from typing import Union
 from dataclasses import dataclass
@@ -27,6 +28,7 @@ class DataQuery():
                  value: str = 'text',
                  format: Format = Format.String):
 
+        self.logger = logging.getLogger()
         self.path = self.__set_path(path)
         self.value = self.__set_value(value)
         self.format = format
@@ -34,16 +36,25 @@ class DataQuery():
     def __set_value(self, value):
         if (value == 'text' or value == 'tag' or value.startswith('@')):
             return value
-        raise ValueError(f'{value} have to be one of [tag, text, @..]')
+
+        error = f'DataQuery - invalid value \'{value}\'. Value needs to be either \'tag\', \'text\' or \'@..\''
+        self.logger.error(error)
+        raise ValueError(error)
 
     def __set_path(self, path):
         if (isinstance(path, DataQuery.XPath)):
             if (':' in path.xpath):
-                raise ValueError(f'"{path.xpath}" xpath must not contain namespace information')
+                error = f'DataQuery - invalid XPath \'{path.xpath}\'. XPath must not contain namespace information'
+                self.logger.error(error)
+                raise ValueError(error)
         elif isinstance(path, DataQuery.Reference):
             if (':' in path.ref):
-                raise ValueError(f'"{path.ref}" reference must not contain namespace information')
+                error = f'DataQuery - invalid Reference \'{path.ref}\'. Reference must not contain namespace information'
+                self.logger.error(error)
+                raise ValueError(error)
         else:
-            raise TypeError(f'{path} is not of type XPath or Reference')
+            error = f'DataQuery - invalid path type ({type(path)}). Path must be of type DataQuery.XPath or DataQuery.Reference'
+            logging.error(error)
+            raise TypeError(error)
 
         return path
