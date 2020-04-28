@@ -6,8 +6,6 @@ from arxml_data_extractor.asr.asr_parser import AsrParser
 from arxml_data_extractor.handler.object_handler import ObjectHandler
 from arxml_data_extractor.query.data_object import DataObject
 
-from tqdm import tqdm
-
 
 class QueryHandler():
 
@@ -32,7 +30,7 @@ class QueryHandler():
         object_handler = ObjectHandler(AsrParser(str(arxml)))
 
         results = {}
-        for data_object in tqdm(queries, desc='Handle Queries'):
+        for data_object in queries:
             if (not isinstance(data_object, DataObject)):
                 error = f'QueryHandler - invalid root element type \'{type(data_object)}\' != \'DataObject\''
                 self.logger.error(error)

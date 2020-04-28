@@ -31,7 +31,10 @@ class ObjectHandler():
         values = []
         elements = self.path_handler.elements_by_path(data_object.path, node)
         for element in tqdm(
-                elements, desc=f'Handle DataObject(\'{data_object.name}\')', disable=is_not_root):
+                elements,
+                desc=f'Handle DataObject(\'{data_object.name}\')',
+                disable=is_not_root,
+                bar_format="{desc:<70}{percentage:3.0f}% |{bar:70}| {n_fmt:>4}/{total_fmt}"):
             if element is not None:
                 self.logger.info(
                     f'ObjectHandler - element found: \'{QName(element).localname}\' at line {element.sourceline - 1}'

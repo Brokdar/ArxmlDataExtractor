@@ -16,7 +16,10 @@ class QueryBuilder():
 
     def build(self, config: dict) -> List[DataObject]:
         data_objects = []
-        for key, value in tqdm(config.items(), desc='Building Queries'):
+        for key, value in tqdm(
+                config.items(),
+                desc='Building Queries',
+                bar_format="{desc:<70}{percentage:3.0f}% |{bar:70}| {n_fmt:>4}/{total_fmt}"):
             data_object = self.__parse_object(key, value)
             data_objects.append(data_object)
         return data_objects
