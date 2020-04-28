@@ -10,10 +10,20 @@ from arxml_data_extractor.data_writer import DataWriter
 
 # sets the text color to red
 def print_error(msg: str):
-    print('\033[91m' + msg + '\033[0m')
+    print('\033[91mError: ' + msg + '\033[0m')
 
 
-def run():
+def handle_error(msg: str):
+    logging.getLogger().error(msg)
+    print_error(msg)
+
+
+def handle_exception(msg: str, e: Exception):
+    logging.getLogger().error(msg, exc_info=e)
+    print_error(f'{msg}, {str(e)}')
+
+
+def parse_arguments():
     # setup console arguments
     parser = argparse.ArgumentParser(
         description='Extracts specified data provided in a config file from an ARXML file.')
@@ -35,41 +45,48 @@ def run():
         help='enable debug modus, this will create a log file.',
         action='store_true')
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    # setup logging
+
+def setup_logging(enable: bool):
     logger = logging.getLogger()
 
-    if args.debug:
+    if enable:
         logging.basicConfig(
             filename='extraction.log', filemode='w', format='%(levelname)s: %(message)s')
         logger.setLevel('DEBUG')
     else:
         logger.disabled = True
 
-    # console argument validation
+    return logger
+
+
+def validate_arguments(args):
     input_file = Path(args.input)
     if not input_file.exists() or not input_file.is_file():
-        logger.error(f'input file: \'{args.input}\' doesn\'t exist or isn\'t a valid file')
-        print_error(f'ERROR: input file not found: \'{args.input}\'')
+        handle_error(f'input file: \'{args.input}\' doesn\'t exist or isn\'t a valid file')
         exit(-1)
 
     config_file = Path(args.config)
     if not config_file.exists() or not config_file.is_file():
-        logger.error(f'config file: \'{args.config}\' doesn\'t exist or isn\'t a valid file.')
-        print_error(f'ERROR: config file not found: \'{args.config}\'.')
+        handle_error(f'config file: \'{args.config}\' doesn\'t exist or isn\'t a valid file.')
         exit(-1)
 
     output_file = Path(args.output)
     allowed_suffix = ['.txt', '.json', '.xlsx']
     if output_file.suffix not in allowed_suffix:
-        logger.error(
-            f'invalid output file extension \'{output_file.suffix}\'. Allowed extensions: \'txt\', \'json\' or \'xlsx\''
-        )
-        print_error(
-            f'invalid output file extension \'{output_file.suffix}\'. Allowed extensions: \'txt\', \'json\' or \'xlsx\''
+        handle_error(
+            f'invalid output file extension \'{output_file.suffix}\'. Allowed extensions: \'.txt\', \'.json\' or \'.xlsx\''
         )
         exit(-1)
+
+    return input_file, config_file, output_file
+
+
+def run():
+    args = parse_arguments()
+    logger = setup_logging(args.debug)
+    input_file, config_file, output_file = validate_arguments(args)
 
     # load configuration file
     try:
@@ -78,8 +95,7 @@ def run():
         config = config_provider.load(str(config_file))
         logger.info('END PROCESS - successfully finished loading configuration')
     except Exception as e:
-        logger.exception(f'failed reading configuration file {str(config_file)}')
-        print_error(f'ERROR: reading config file \'{str(config_file)}\', {str(e)}')
+        handle_exception(f'reading configuration file \'{str(config_file)}\'', e)
         exit(-1)
 
     # parse configuration and build queries
@@ -89,8 +105,7 @@ def run():
         queries = query_builder.build(config)
         logger.info('END PROCESS - successfully finished building queries from configuration')
     except Exception as e:
-        logger.exception(f'failed building queries')
-        print_error(f'ERROR: failed building queries, {str(e)}')
+        handle_exception('building queries', e)
         exit(-1)
 
     # handle queries and extract the data
@@ -100,14 +115,13 @@ def run():
         data = query_handler.handle_queries(str(input_file), queries)
         logger.info('END PROCESS - successfully finished handling of data queries')
     except Exception as e:
-        logger.exception(f'failed handling queries')
-        print_error(f'ERROR: failed handling queries, {str(e)}')
+        handle_exception('handling queries', e)
         exit(-1)
 
     # write the extracted data in the given output format
     try:
         logger.info(f'START PROCESS - writing the results to \'{str(output_file)}\'')
-        print(f'writing results to \'{str(output_file)}\'')
+        print(f'Writing results to \'{str(output_file)}\'')
 
         output_writer = DataWriter()
         if output_file.suffix == '.json':
@@ -121,8 +135,7 @@ def run():
         print(f'Done.')
 
     except Exception as e:
-        logger.exception(f'failed writing results to \'{str(output_file)}\'')
-        print_error(f'ERROR: failed writing result to \'{str(output_file)}\', {str(e)}')
+        handle_exception(f'writing results to \'{str(output_file)}\'', e)
         exit(-1)
 
 
