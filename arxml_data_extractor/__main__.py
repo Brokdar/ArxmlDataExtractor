@@ -27,16 +27,25 @@ def run():
     parser.add_argument(
         '--output',
         '-o',
-        help='output file, possible file formats are .txt, .json or .xlsx',
+        help='output file, possible file formats are \'.txt\', \'.json\' or \'.xlsx\'.',
         required=True)
+    parser.add_argument(
+        '--debug',
+        '-d',
+        help='enable debug modus, this will create a log file.',
+        action='store_true')
 
     args = parser.parse_args()
 
     # setup logging
-    logging.basicConfig(
-        filename='extraction.log', filemode='w', format='%(levelname)s: %(message)s')
     logger = logging.getLogger()
-    logger.setLevel('DEBUG')
+
+    if args.debug:
+        logging.basicConfig(
+            filename='extraction.log', filemode='w', format='%(levelname)s: %(message)s')
+        logger.setLevel('DEBUG')
+    else:
+        logger.disabled = True
 
     # console argument validation
     input_file = Path(args.input)
