@@ -64,10 +64,10 @@ def run():
 
     # load configuration file
     try:
-        logger.info(f'start loading configuration: \'{str(config_file)}\'')
+        logger.info(f'START PROCESS - loading configuration \'{str(config_file)}\'')
         config_provider = ConfigProvider()
         config = config_provider.load(str(config_file))
-        logger.info('successfully finished loading configuration')
+        logger.info('END PROCESS - successfully finished loading configuration')
     except Exception as e:
         logger.exception(f'failed reading configuration file {str(config_file)}')
         print_error(f'ERROR: reading config file \'{str(config_file)}\', {str(e)}')
@@ -75,10 +75,10 @@ def run():
 
     # parse configuration and build queries
     try:
-        logger.info('start building queries from configuration')
+        logger.info('START PROCESS - building queries from configuration')
         query_builder = QueryBuilder()
         queries = query_builder.build(config)
-        logger.info('successfully finished building queries from configuration')
+        logger.info('END PROCESS - successfully finished building queries from configuration')
     except Exception as e:
         logger.exception(f'failed building queries')
         print_error(f'ERROR: failed building queries, {str(e)}')
@@ -86,10 +86,10 @@ def run():
 
     # handle queries and extract the data
     try:
-        logger.info('start processing of data queries')
+        logger.info('START PROCESS - handling of data queries')
         query_handler = QueryHandler()
         data = query_handler.handle_queries(str(input_file), queries)
-        logger.info('successfully finished processing of data queries')
+        logger.info('END PROCESS - successfully finished handling of data queries')
     except Exception as e:
         logger.exception(f'failed handling queries')
         print_error(f'ERROR: failed handling queries, {str(e)}')
@@ -97,8 +97,8 @@ def run():
 
     # write the extracted data in the given output format
     try:
-        logger.info(f'start writing the results to file: \'{str(output_file)}\'')
-        print(f'writing results to file: \'{str(output_file)}\'')
+        logger.info(f'START PROCESS - writing the results to \'{str(output_file)}\'')
+        print(f'writing results to \'{str(output_file)}\'')
 
         output_writer = DataWriter()
         if output_file.suffix == '.json':
@@ -108,7 +108,7 @@ def run():
         else:
             output_writer.write(str(output_file), data)
 
-        logger.info('successfully finished writing the results')
+        logger.info('END PROCESS - successfully finished writing the results')
         print(f'Done.')
 
     except Exception as e:

@@ -1,4 +1,4 @@
-from lxml.etree import Element
+from lxml.etree import Element, QName
 from typing import Union, List, Any
 from tqdm import tqdm
 import logging
@@ -18,16 +18,33 @@ class ObjectHandler():
         self.path_handler = PathHandler(parser)
 
     def handle(self, data_object: DataObject, node: Element = None) -> Union[list, dict]:
-        is_root = True
+        is_not_root = True
         if node is None:
-            is_root = False
+            is_not_root = False
             node = self.path_handler.parser.root
+
+        if is_not_root:
+            self.logger.info(f'ObjectHandler - handle DataObject(\'{data_object.name}\')')
+        else:
+            self.logger.info(f'ObjectHandler - [root] handle DataObject(\'{data_object.name}\')')
 
         values = []
         elements = self.path_handler.elements_by_path(data_object.path, node)
-        for element in tqdm(elements, desc='Parse Root Objects', disable=is_root):
+        for element in tqdm(
+                elements, desc=f'Handle DataObject(\'{data_object.name}\')', disable=is_not_root):
             if element is not None:
+                self.logger.info(
+                    f'ObjectHandler - element found: \'{QName(element).localname}\' at line {element.sourceline - 1}'
+                )
                 values.append(self.__handle_values(data_object.values, element))
+
+        if not values:
+            self.logger.warning(
+                f'ObjectHandler - no values found for DataObject(\'{data_object.name}\')')
+        else:
+            self.logger.info(
+                f'ObjectHandler - values found for DataObject(\'{data_object.name}\'): {len(values)}'
+            )
 
         return values[0] if len(values) == 1 else values
 
@@ -38,6 +55,13 @@ class ObjectHandler():
                 results[value.name] = self.handle(value, node)
             elif isinstance(value, DataValue):
                 results[value.name] = self.__handle_value(value.query, node)
+                if results[value.name] is None:
+                    self.logger.info(
+                        f'ObjectHandler - no value found for DataValue(\'{value.name}\')')
+                else:
+                    self.logger.info(
+                        f'ObjectHandler - value found: DataValue(\'{value.name}\') = \'{results[value.name]}\''
+                    )
             else:
                 error = f'ObjectHandler - invalid value type ({type(value)}). Value must be of type DataObject or DataValue'
                 self.logger.error(error)
