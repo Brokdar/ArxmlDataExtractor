@@ -58,8 +58,6 @@ def setup_logging(enable: bool):
     else:
         logger.disabled = True
 
-    return logger
-
 
 def validate_arguments(args):
     input_file = Path(args.input)
@@ -83,60 +81,81 @@ def validate_arguments(args):
     return input_file, config_file, output_file
 
 
-def run():
-    args = parse_arguments()
-    logger = setup_logging(args.debug)
-    input_file, config_file, output_file = validate_arguments(args)
+def load_config(file):
+    logger = logging.getLogger()
+    logger.info(f'START PROCESS - loading configuration \'{str(file)}\'')
 
-    # load configuration file
     try:
-        logger.info(f'START PROCESS - loading configuration \'{str(config_file)}\'')
         config_provider = ConfigProvider()
-        config = config_provider.load(str(config_file))
-        logger.info('END PROCESS - successfully finished loading configuration')
+        config = config_provider.load(str(file))
     except Exception as e:
-        handle_exception(f'reading configuration file \'{str(config_file)}\'', e)
+        handle_exception(f'reading configuration file \'{str(file)}\'', e)
         exit(-1)
 
-    # parse configuration and build queries
+    logger.info('END PROCESS - successfully finished loading configuration')
+    return config
+
+
+def build_queries(config):
+    logger = logging.getLogger()
+    logger.info('START PROCESS - building queries from configuration')
+
     try:
-        logger.info('START PROCESS - building queries from configuration')
         query_builder = QueryBuilder()
         queries = query_builder.build(config)
-        logger.info('END PROCESS - successfully finished building queries from configuration')
     except Exception as e:
         handle_exception('building queries', e)
         exit(-1)
 
-    # handle queries and extract the data
+    logger.info('END PROCESS - successfully finished building queries from configuration')
+    return queries
+
+
+def extract_data(file, queries):
+    logger = logging.getLogger()
+    logger.info('START PROCESS - handling of data queries')
+
     try:
-        logger.info('START PROCESS - handling of data queries')
         query_handler = QueryHandler()
-        data = query_handler.handle_queries(str(input_file), queries)
-        logger.info('END PROCESS - successfully finished handling of data queries')
+        data = query_handler.handle_queries(str(file), queries)
     except Exception as e:
         handle_exception('handling queries', e)
         exit(-1)
 
-    # write the extracted data in the given output format
+    logger.info('END PROCESS - successfully finished handling of data queries')
+    return data
+
+
+def write_data(file, data, queries):
+    logger = logging.getLogger()
+    logger.info(f'START PROCESS - writing the results to \'{str(file)}\'')
+    print(f'Writing results to \'{str(file)}\'')
+
     try:
-        logger.info(f'START PROCESS - writing the results to \'{str(output_file)}\'')
-        print(f'Writing results to \'{str(output_file)}\'')
-
         output_writer = DataWriter()
-        if output_file.suffix == '.json':
-            output_writer.write_json(str(output_file), data)
-        elif output_file.suffix == '.xlsx':
-            output_writer.write_excel(str(output_file), data, queries)
+        if file.suffix == '.json':
+            output_writer.write_json(str(file), data)
+        elif file.suffix == '.xlsx':
+            output_writer.write_excel(str(file), data, queries)
         else:
-            output_writer.write(str(output_file), data)
-
-        logger.info('END PROCESS - successfully finished writing the results')
-        print(f'Done.')
-
+            output_writer.write(str(file), data)
     except Exception as e:
-        handle_exception(f'writing results to \'{str(output_file)}\'', e)
+        handle_exception(f'writing results to \'{str(file)}\'', e)
         exit(-1)
+
+    logger.info('END PROCESS - successfully finished writing the results')
+    print(f'Done.')
+
+
+def run():
+    args = parse_arguments()
+    setup_logging(args.debug)
+    input_file, config_file, output_file = validate_arguments(args)
+
+    config = load_config(config_file)
+    queries = build_queries(config)
+    data = extract_data(input_file, queries)
+    write_data(output_file, data, queries)
 
 
 if __name__ == '__main__':
