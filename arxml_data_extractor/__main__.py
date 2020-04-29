@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from pathlib import Path
 
 from arxml_data_extractor.config_provider import ConfigProvider
@@ -63,12 +64,12 @@ def validate_arguments(args):
     input_file = Path(args.input)
     if not input_file.exists() or not input_file.is_file():
         handle_error(f'input file: \'{args.input}\' doesn\'t exist or isn\'t a valid file')
-        exit(-1)
+        sys.exit(-1)
 
     config_file = Path(args.config)
     if not config_file.exists() or not config_file.is_file():
         handle_error(f'config file: \'{args.config}\' doesn\'t exist or isn\'t a valid file')
-        exit(-1)
+        sys.exit(-1)
 
     output_file = Path(args.output)
     allowed_suffix = ['.txt', '.json', '.xlsx']
@@ -76,7 +77,7 @@ def validate_arguments(args):
         handle_error(
             f'invalid output file extension \'{output_file.suffix}\'. Allowed extensions: \'.txt\', \'.json\' or \'.xlsx\''
         )
-        exit(-1)
+        sys.exit(-1)
 
     return input_file, config_file, output_file
 
@@ -90,7 +91,7 @@ def load_config(file):
         config = config_provider.load(str(file))
     except Exception as e:
         handle_exception(f'reading configuration file \'{str(file)}\'', e)
-        exit(-1)
+        sys.exit(-1)
 
     logger.info('END PROCESS - successfully finished loading configuration')
     return config
@@ -105,7 +106,7 @@ def build_queries(config):
         queries = query_builder.build(config)
     except Exception as e:
         handle_exception('building queries', e)
-        exit(-1)
+        sys.exit(-1)
 
     logger.info('END PROCESS - successfully finished building queries from configuration')
     return queries
@@ -120,7 +121,7 @@ def extract_data(file, queries):
         data = query_handler.handle_queries(str(file), queries)
     except Exception as e:
         handle_exception('handling queries', e)
-        exit(-1)
+        sys.exit(-1)
 
     logger.info('END PROCESS - successfully finished handling of data queries')
     return data
@@ -141,7 +142,7 @@ def write_data(file, data, queries):
             output_writer.write(str(file), data)
     except Exception as e:
         handle_exception(f'writing results to \'{str(file)}\'', e)
-        exit(-1)
+        sys.exit(-1)
 
     logger.info('END PROCESS - successfully finished writing results')
     print(f'Done.')
