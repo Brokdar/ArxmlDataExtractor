@@ -59,8 +59,10 @@ class DataWriter():
 
         workbook.close()
 
-    def __write_worksheet(self, sheet, data: dict, query: DataObject):
+    def __write_worksheet(self, sheet, data: Union[dict, list], query: DataObject):
         header = self.__extract_header(query)
+        if isinstance(data, dict):
+            data = [data]
         df = self.__flatten(data)
 
         start = self.__write_header(sheet, header)
@@ -122,10 +124,10 @@ class DataWriter():
                 if isinstance(value, dict):
                     rows.extend(cls.__flatten(value))
                 elif isinstance(value, list):
-                    row = rows.copy()
+                    copy = rows.copy()
                     rows.clear()
                     for v in value:
-                        rows.append(row + cls.__flatten(v))
+                        rows.append(copy + cls.__flatten(v))
                 else:
                     rows.append(value)
         elif isinstance(data, list):
