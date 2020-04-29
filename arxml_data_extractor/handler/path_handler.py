@@ -58,7 +58,7 @@ class PathHandler():
         path_to_reference, path_to_value = self.__split(path.xpath)
 
         reference = self.element_by_xpath(path_to_reference, node)
-        if 'REF' not in reference.tag:
+        if reference is None or 'REF' not in reference.tag:
             self.logger.warning(
                 f'PathHandler - processing inline reference, no reference found at \'{path.xpath}\''
             )
