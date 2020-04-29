@@ -1,5 +1,6 @@
 from typing import List
 from tqdm import tqdm
+import logging
 
 from arxml_data_extractor.query.data_object import DataObject
 from arxml_data_extractor.query.data_query import DataQuery
@@ -11,11 +12,14 @@ class QueryBuilder():
     __format_separator = '>'
 
     def __init__(self):
-        pass
+        self.logger = logging.getLogger()
 
     def build(self, config: dict) -> List[DataObject]:
         data_objects = []
-        for key, value in tqdm(config.items(), desc='Building Queries'):
+        for key, value in tqdm(
+                config.items(),
+                desc='Building Queries',
+                bar_format="{desc:<70}{percentage:3.0f}% |{bar:70}| {n_fmt:>4}/{total_fmt}"):
             data_object = self.__parse_object(key, value)
             data_objects.append(data_object)
         return data_objects
@@ -24,9 +28,9 @@ class QueryBuilder():
         required = {'_xpath', '_xref', '_ref'}
         path_value = required & values.keys()
         if len(path_value) != 1:
-            raise ValueError(
-                'DataObject must have exactly one of the following elements specified: _path or _ref'
-            )
+            error = f'QueryBuilder - DataObject({name}) is missing an anchor. Possible anchors are \'_xpath\', \'_ref\' or \'_xref\''
+            self.logger.error(error)
+            raise ValueError(error)
 
         if '_xpath' in path_value:
             xpath = values['_xpath'].split(self.__path_separator)[-1]
@@ -57,7 +61,9 @@ class QueryBuilder():
             query = self.__parse_query(value)
             return DataValue(name, query)
         except Exception as e:
-            raise ValueError(f'Value: {name}') from e
+            error = f'QueryBuilder - parsing error on query for value \'{name}\': \'{value}\''
+            self.logger.error(error, exc_info=e)
+            raise ValueError(error) from e
 
     def __parse_query(self, text: str) -> DataQuery:
         if self.__path_separator not in text:
@@ -80,14 +86,17 @@ class QueryBuilder():
     def __get_path(self, path: str) -> DataQuery.XPath:
         illegal_character = [self.__path_separator, self.__format_separator]
         if any(c in illegal_character for c in path):
-            raise ValueError(f'{path} contains illegal characters [:>]')
+            error = f'QueryBuilder - illegal characters found on path \'{path}\'. Path must not contain any of the following characters: \':\', \'>\''
+            self.logger.error(error)
+            raise ValueError(error)
 
         if path[0] != '&':
             return DataQuery.XPath(path)
         else:
             if path[1] != '(':
-                raise ValueError(
-                    f'Inline Reference detected: parantheses needs to follow after "&"')
+                error = f'QueryBuilder - invalid syntax on inline reference \'{path}\'. Inline references must start with \'&(\''
+                self.logger.error(error)
+                raise ValueError(error)
             return DataQuery.XPath(path, True)
 
     def __get_value(self, value: str) -> str:
@@ -97,7 +106,9 @@ class QueryBuilder():
             if len(value) > 1:
                 return value
             else:
-                raise ValueError(f'attribute names have to be defined')
+                error = f'QueryBuilder - invalid syntax on attribute. Attribute name must be defined'
+                self.logger.error(error)
+                raise ValueError(error)
         else:
             return 'text'
 
