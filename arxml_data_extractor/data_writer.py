@@ -122,7 +122,14 @@ class DataWriter():
         if isinstance(data, dict):
             for value in data.values():
                 if isinstance(value, dict):
-                    rows.extend(cls.__flatten(value))
+                    values = cls.__flatten(value)
+                    if isinstance(values[0], list):
+                        copy = rows.copy()
+                        rows.clear()
+                        for v in values:
+                            rows.append(copy + v)
+                    else:
+                        rows.extend(cls.__flatten(value))
                 elif isinstance(value, list):
                     copy = rows.copy()
                     rows.clear()
