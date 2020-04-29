@@ -67,7 +67,7 @@ def validate_arguments(args):
 
     config_file = Path(args.config)
     if not config_file.exists() or not config_file.is_file():
-        handle_error(f'config file: \'{args.config}\' doesn\'t exist or isn\'t a valid file.')
+        handle_error(f'config file: \'{args.config}\' doesn\'t exist or isn\'t a valid file')
         exit(-1)
 
     output_file = Path(args.output)
@@ -128,7 +128,7 @@ def extract_data(file, queries):
 
 def write_data(file, data, queries):
     logger = logging.getLogger()
-    logger.info(f'START PROCESS - writing the results to \'{str(file)}\'')
+    logger.info(f'START PROCESS - writing results to \'{str(file)}\'')
     print(f'Writing results to \'{str(file)}\'')
 
     try:
@@ -143,7 +143,7 @@ def write_data(file, data, queries):
         handle_exception(f'writing results to \'{str(file)}\'', e)
         exit(-1)
 
-    logger.info('END PROCESS - successfully finished writing the results')
+    logger.info('END PROCESS - successfully finished writing results')
     print(f'Done.')
 
 

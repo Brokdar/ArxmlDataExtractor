@@ -251,7 +251,7 @@ def test_config_must_have_root_object(only_value):
         query_handler.handle_queries(arxml, data_objects)
 
 
-def test_returns_none_value_if_reference_not_found(only_value):
+def test_returns_empty_list_if_reference_not_found(only_value):
     data_object = DataObject('CAN Cluster', DataQuery.Reference('/Cluster/CAN1'),
                              [DataValue('Name', DataQuery(DataQuery.XPath('./SHORT-NAME')))])
 

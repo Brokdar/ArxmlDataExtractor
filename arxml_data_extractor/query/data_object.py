@@ -21,7 +21,7 @@ class DataObject():
         if (isinstance(path, (DataQuery.Reference, DataQuery.XPath))):
             return path
         else:
-            error = f'DataObject(\'{self.name}\') - path ({type(path)}) must be of type DataQuery.XPath or DataQuery.Reference'
+            error = f'DataObject(\'{self.name}\') - invalid path type ({type(path)}). Path must be of type DataQuery.XPath or DataQuery.Reference'
             self.logger.error(error)
             raise TypeError(error)
 

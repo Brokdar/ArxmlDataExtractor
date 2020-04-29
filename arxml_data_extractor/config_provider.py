@@ -8,7 +8,7 @@ class ConfigProvider():
         config_file = Path(file)
         if config_file.suffix != '.yaml':
             raise ValueError(
-                f'invalid config file extension: \'{config_file.suffix}\' != \'.yaml\'.')
+                f'invalid config file extension: \'{config_file.suffix}\' != \'.yaml\'')
 
         with open(str(config_file), 'r') as stream:
             config = yaml.safe_load(stream)
