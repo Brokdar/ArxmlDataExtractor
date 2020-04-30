@@ -7,7 +7,14 @@ from arxml_data_extractor.query.data_query import DataQuery
 
 
 def handle(query: DataQuery, node: Element) -> Any:
-    value = __get_value(query.value, node)
+    # Special treatment for inline references pointing to the references SHORT-NAME
+    if isinstance(query.path, DataQuery.XPath) \
+        and query.path.is_reference \
+        and query.path.xpath.endswith(')SHORT-NAME'):
+        value = node.text.split('/')[-1]
+    else:
+        value = __get_value(query.value, node)
+
     if value is None:
         return value
     return __convert_value(value, query.format)
