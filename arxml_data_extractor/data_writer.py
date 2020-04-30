@@ -1,5 +1,4 @@
 import json
-from dataclasses import dataclass
 
 from arxml_data_extractor.output.text_writer import TextWriter
 from arxml_data_extractor.output.excel_writer import ExcelWriter
