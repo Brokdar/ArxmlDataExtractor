@@ -64,6 +64,13 @@ class PathHandler():
             )
             return None
 
+        # if inline reference and value path is SHORT-NAME, it skips getting referenced element
+        # to increase parsing performance. Instead the element containing the reference is returned.
+        # This is only possible because the SHORT-NAME can be extracted directly from reference.text.
+        # The special treatment is implemented in ValueHandler.
+        if path_to_value == 'SHORT-NAME':
+            return reference
+
         referred_element = self.element_by_ref(reference.text)
         return self.element_by_xpath(path_to_value, referred_element)
 
