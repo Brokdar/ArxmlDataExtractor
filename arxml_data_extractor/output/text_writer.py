@@ -14,7 +14,7 @@ class TextWriter():
             rows = tabularize(values)
             text.append(tabulate(rows, headers=headers[i], tablefmt="orgtbl"))
 
-        return '\n'.join(text)
+        return '\n\n\n'.join(text)
 
     def analyze_headers(self, data: dict) -> list:
         headers = []
