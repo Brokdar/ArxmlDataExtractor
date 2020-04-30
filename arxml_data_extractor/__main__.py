@@ -127,7 +127,7 @@ def extract_data(file, queries):
     return data
 
 
-def write_data(file, data, queries):
+def write_data(file, data):
     logger = logging.getLogger()
     logger.info(f'START PROCESS - writing results to \'{str(file)}\'')
     print(f'Writing results to \'{str(file)}\'')
@@ -137,9 +137,9 @@ def write_data(file, data, queries):
         if file.suffix == '.json':
             output_writer.write_json(str(file), data)
         elif file.suffix == '.xlsx':
-            output_writer.write_excel(str(file), data, queries)
+            output_writer.write_excel(str(file), data)
         else:
-            output_writer.write(str(file), data)
+            output_writer.write_text(str(file), data)
     except Exception as e:
         handle_exception(f'writing results to \'{str(file)}\'', e)
         sys.exit(-1)
@@ -156,7 +156,7 @@ def run():
     config = load_config(config_file)
     queries = build_queries(config)
     data = extract_data(input_file, queries)
-    write_data(output_file, data, queries)
+    write_data(output_file, data)
 
 
 if __name__ == '__main__':
