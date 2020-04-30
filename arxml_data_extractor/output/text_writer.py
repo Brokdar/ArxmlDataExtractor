@@ -7,7 +7,7 @@ class TextWriter():
 
     def as_table(self, data: dict) -> str:
         text = []
-        headers = self.headers(data)
+        headers = self.analyze_headers(data)
         for i, values in enumerate(data.values()):
             if not isinstance(values, list):
                 values = [values]
@@ -16,7 +16,7 @@ class TextWriter():
 
         return '\n'.join(text)
 
-    def headers(self, data: dict) -> list:
+    def analyze_headers(self, data: dict) -> list:
         headers = []
 
         for value in data.values():
@@ -35,8 +35,7 @@ class TextWriter():
                     names.append(key)
         else:
             # first entry is enough to collect all names
-            values = data[0]
-            names.extend(cls.__names(values))
+            names.extend(cls.__names(data[0]))
         return names
 
     def as_dictionary(self, data: dict):

@@ -26,7 +26,7 @@ def test_flatten_nested_dict():
 
 
 def test_multiple_entries():
-    input = [{{'Name': 'Request', 'Length': 8}, {'Name': 'Response', 'Length': 16}}]
+    input = [{'Name': 'Request', 'Length': 8}, {'Name': 'Response', 'Length': 16}]
 
     result = tabularize(input)
 
