@@ -7,3 +7,4 @@ pathlib
 xlsxwriter
 arrow
 tqdm
+tabulate
