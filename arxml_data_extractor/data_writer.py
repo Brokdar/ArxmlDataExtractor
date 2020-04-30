@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Union, List
 
 from arxml_data_extractor.query.data_object import DataObject
+from arxml_data_extractor.output.tabularize import tabularize
 
 
 @dataclass
@@ -63,7 +64,7 @@ class DataWriter():
         header = self.__extract_header(query)
         if isinstance(data, dict):
             data = [data]
-        df = self.__flatten(data)
+        df = tabularize(data)
 
         start = self.__write_header(sheet, header)
         for row, frame in enumerate(df, start + 1):
@@ -114,38 +115,3 @@ class DataWriter():
             col += 1
 
         return max_row, col - 1
-
-    @classmethod
-    def __flatten(cls, data: Union[list, dict]):
-        rows = []
-
-        if isinstance(data, dict):
-            for value in data.values():
-                if isinstance(value, dict):
-                    values = cls.__flatten(value)
-                    if isinstance(values[0], list):
-                        copy = rows.copy()
-                        rows.clear()
-                        for v in values:
-                            rows.append(copy + v)
-                    else:
-                        rows.extend(cls.__flatten(value))
-                elif isinstance(value, list):
-                    copy = rows.copy()
-                    rows.clear()
-                    for v in value:
-                        rows.append(copy + cls.__flatten(v))
-                else:
-                    rows.append(value)
-        elif isinstance(data, list):
-            for d in data:
-                res = cls.__flatten(d)
-                if res and isinstance(res[0], list):
-                    rows.extend(res)
-                else:
-                    rows.append(res)
-        else:
-            raise TypeError(
-                f'DataWriter - invalid data type ({type(data)}). Data must be of type list or dict')
-
-        return rows
