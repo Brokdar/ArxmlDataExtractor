@@ -29,7 +29,7 @@ class TextWriter():
         names = []
         if isinstance(data, dict):
             for key, values in data.items():
-                if isinstance(values, list) or isinstance(values, dict):
+                if isinstance(values, (list, dict)):
                     names.extend(cls.__names(values))
                 else:
                     names.append(key)

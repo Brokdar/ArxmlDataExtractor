@@ -5,15 +5,6 @@ from arxml_data_extractor.output.text_writer import TextWriter
 from arxml_data_extractor.output.excel_writer import ExcelWriter
 
 
-@dataclass
-class Cell():
-    row: int
-    col: int
-    val: any
-    row_span: bool = False
-    col_span: int = 0
-
-
 class DataWriter():
 
     def write_text(self, file: str, data: dict):
