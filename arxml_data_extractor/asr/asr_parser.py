@@ -7,12 +7,15 @@ from typing import Union
 class AsrParser():
     """Provides parsing functions for navigating within an ARXML file.
     """
-    ns = {'ar': 'http://autosar.org/schema/r4.0'}
 
     def __init__(self, arxml: str):
         parser = etree.XMLParser(remove_blank_text=True)
         self.__tree = etree.parse(arxml, parser)
         self.__root = self.tree.getroot()
+
+        # get namespace from arxml file
+        AsrParser.ns = {'ar': self.__root.nsmap[None]}
+
         self._packages = {
             AsrParser.get_shortname(element): element
             for element in self.find_all_elements('AUTOSAR/AR-PACKAGES/AR-PACKAGE')
